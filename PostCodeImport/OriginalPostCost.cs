@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Postcode
 {
-    class OriginalPostCost
+    public class OriginalPostcode 
     {
         public string postCode { get; set; }
 
@@ -17,4 +17,6 @@ namespace Postcode
         public string number { get; set; }
 
     }
+
+
 }
