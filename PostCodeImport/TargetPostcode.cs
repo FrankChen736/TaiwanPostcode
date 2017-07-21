@@ -19,5 +19,10 @@ namespace Postcode
         /// 鄉,鎮,區
         /// </summary>
         public string area { get; set; }
+
+        /// <summary>
+        /// 路名
+        /// </summary>
+        public string road { get; set; }
     }
 }

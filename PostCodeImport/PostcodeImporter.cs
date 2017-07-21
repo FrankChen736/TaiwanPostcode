@@ -15,6 +15,7 @@ namespace Postcode
 
         protected readonly string[] CityKeyWord = new string[] { "市", "縣", "島", "臺" };
         protected readonly string[] AreaKeyWord = new string[] { "鄉", "鎮", "市", "區", "臺", "島" };
+        protected readonly string[] FullTypeNumberWord = new string[] { "０", "１", "２", "３", "４", "５", "６", "７", "８", "９" };
 
         /// <summary>
         /// 匯入資料
@@ -42,7 +43,7 @@ namespace Postcode
                 {
                     postCode = m.Element("欄位1").Value,
                     area = m.Element("欄位4").Value,
-                    road = m.Element("欄位2").Value,
+                    road = FullTypeNumberConvertToHalfType( m.Element("欄位2").Value),
                     number = m.Element("欄位3").Value,
                 }).ToList();
 
@@ -57,13 +58,14 @@ namespace Postcode
                 TargetPostcode rec = new TargetPostcode();
                 rec.city = SplitCity(data.area);
                 rec.area = SplitArea(data.area);
+                rec.road = data.road.Trim();
                 targetData.Add(rec);
 
             });
 
             Debug.WriteLine($"城市空白筆數 {targetData.Where(m => (m.city ?? "") == string.Empty).Count()}");
             Debug.WriteLine(targetData.Select(m => m.city).Distinct().Aggregate((cur, nex) => cur + Environment.NewLine + nex));
-            
+            originalData.ToList().ForEach(m => Console.WriteLine(m.road));
             return targetData;
         }
 
@@ -87,6 +89,25 @@ namespace Postcode
         protected virtual string SplitArea(string str)
         {
             return str.Substring(3, str.Length - 3);
+        }
+        /// <summary>
+        /// 將全型數字改為半型數字
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string FullTypeNumberConvertToHalfType(string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                value
+                    .SelectMany(m => m.ToString()).Select(m => m.ToString())
+                    .Where(m => FullTypeNumberWord.Contains(m))
+                    .ToList()
+                    .ForEach(m => value = value.Replace(m, Array.IndexOf(FullTypeNumberWord, m).ToString()));
+
+            }
+
+            return value;
         }
     }
 }
